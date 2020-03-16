@@ -19,8 +19,7 @@ data_path=${main_path}/data
 mkfolder(){
 	folders=$1
 	for folder in ${folders[*]}; do
-		[ ! -d "${folder}" ] && mkdir -p "${folder}"
-		echo "Create $folder..."
+		[ ! -d "${folder}" ] && mkdir -p "${folder}" && echo "Create $folder..."
 	done
 }
 
@@ -50,8 +49,17 @@ create_user(){
   if [ $# -eq 2 ]; then
       g=$2
     fi
+  create_group $g
   egrep "^$u" /etc/passwd >& /dev/null
   if [ $? -ne 0 ]; then
       useradd -s /sbin/nologin -g $g $u
     fi
 }
+
+create_group $group
+egrep "^$user" /etc/passwd >& /dev/null
+if [ $? -ne 0 ]
+then
+    useradd -m -s /sbin/nologin -d /opt/$user/home -g $group $user
+fi
+
